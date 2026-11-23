@@ -28,9 +28,13 @@ int createNode(DoublyCircularList *list, char *key, char *value) {
   return NO_NODE;
 }
 
-bool isFull(DoublyCircularList *list) { return list->count >= MAX_NODES; }
+bool isFull(DoublyCircularList *list){
+  return list->count >= MAX_NODES; 
+}
 
-int countList(DoublyCircularList *list) { return list->count; }
+int countList(DoublyCircularList *list){
+  return list->count; 
+}
 
 bool isEmpty(DoublyCircularList *list) {
   return list->count == 0 || list->head == NO_NODE;
