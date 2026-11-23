@@ -2,7 +2,7 @@
 #include <string.h>
 
 // Меняет местами два целых числа.
-static void swap(int *a, int *b) {
+void swap(int *a, int *b) {
   int temp = *a;
   *a = *b;
   *b = temp;
@@ -10,10 +10,10 @@ static void swap(int *a, int *b) {
 
 // Разбиение по схеме Ломуто. Опорный элемент - средний.
 // Возвращает индекс, на котором опорный элемент встал окончательно.
-static int partition(const Node nodes[], int order[], int low, int high) {
+int partition(Node nodes[], int order[], int low, int high) {
   int middle = low + (high - low) / 2;
   swap(&order[middle], &order[high]); // прячем опорный в конец
-  const char *pivotKey = nodes[order[high]].key;
+  char *pivotKey = nodes[order[high]].key;
 
   int i = low - 1; // граница области "меньше опорного"
   for (int j = low; j < high; j++) {
@@ -26,7 +26,7 @@ static int partition(const Node nodes[], int order[], int low, int high) {
   return i + 1;
 }
 
-void quickSort(const Node nodes[], int order[], int low, int high) {
+void quickSort(Node nodes[], int order[], int low, int high) {
   if (low < high) {
     int p = partition(nodes, order, low, high);
     quickSort(nodes, order, low, p - 1);

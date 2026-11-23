@@ -3,24 +3,24 @@ CC = gcc
 CFLAGS = -Iinclude -Wall -Wextra -g
 
 # Главная цель: собрать программу из объектных файлов
-main: build/main.o build/linked_list.o build/sort.o build/interactive.o
+main: build/main.o build/doubly_circular_list.o build/sort.o build/interactive.o
 	@mkdir -p build
-	$(CC) $(CFLAGS) build/main.o build/linked_list.o build/sort.o build/interactive.o -o build/main
+	$(CC) $(CFLAGS) build/main.o build/doubly_circular_list.o build/sort.o build/interactive.o -o build/main
 
 # Как получить каждый объектный файл
-build/main.o: src/main.c include/interactive.h include/linked_list.h include/node.h
+build/main.o: src/main.c include/interactive.h include/doubly_circular_list.h include/node.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c src/main.c -o build/main.o
 
-build/linked_list.o: src/linked_list.c include/linked_list.h include/node.h include/sort.h
+build/doubly_circular_list.o: src/doubly_circular_list.c include/doubly_circular_list.h include/node.h include/sort.h
 	@mkdir -p build
-	$(CC) $(CFLAGS) -c src/linked_list.c -o build/linked_list.o
+	$(CC) $(CFLAGS) -c src/doubly_circular_list.c -o build/doubly_circular_list.o
 
 build/sort.o: src/sort.c include/sort.h include/node.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c src/sort.c -o build/sort.o
 
-build/interactive.o: src/interactive.c include/interactive.h include/linked_list.h include/node.h
+build/interactive.o: src/interactive.c include/interactive.h include/doubly_circular_list.h include/node.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c src/interactive.c -o build/interactive.o
 

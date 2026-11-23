@@ -1,4 +1,4 @@
-#include "linked_list.h"
+#include "doubly_circular_list.h"
 #include "sort.h"
 #include <stdio.h>
 #include <string.h>
@@ -6,7 +6,7 @@
 // ---------- Вспомогательные (приватные) функции ----------
 
 // Приводит ячейку к состоянию "свободна".
-static void clearNode(Node *node) {
+void clearNode(Node *node) {
   node->key[0] = '\0';
   node->value[0] = '\0';
   node->next = NO_NODE;
@@ -16,7 +16,7 @@ static void clearNode(Node *node) {
 
 // Находит свободную ячейку массива, записывает в неё ключ и значение
 // и возвращает её индекс. В список узел НЕ включается.
-static int createNode(LinkedList *list, const char *key, const char *value) {
+int createNode(DoublyCircularList *list, char *key, char *value) {
   for (int i = 0; i < MAX_NODES; i++) {
     if (!list->nodes[i].used) {
       Node *node = &list->nodes[i];
@@ -31,8 +31,30 @@ static int createNode(LinkedList *list, const char *key, const char *value) {
   return NO_NODE;
 }
 
+bool isFull(DoublyCircularList *list) { return list->count >= MAX_NODES; }
+
+int countList(DoublyCircularList *list) { return list->count; }
+
+bool isEmpty(DoublyCircularList *list) {
+  return list->count == 0 || list->head == NO_NODE;
+}
+
+int findNode(DoublyCircularList *list, char *key) {
+  if (isEmpty(list)) {
+    return NO_NODE;
+  }
+  int current = list->head;
+  do {
+    if (strcmp(list->nodes[current].key, key) == 0) {
+      return current;
+    }
+    current = list->nodes[current].next;
+  } while (current != list->head);
+  return NO_NODE;
+}
+
 // Проверяет, можно ли добавлять ключ: есть ли место и нет ли такого ключа.
-static ListStatus checkInsert(const LinkedList *list, const char *key) {
+ListStatus checkInsert(DoublyCircularList *list, char *key) {
   if (isFull(list)) {
     return LIST_FULL;
   }
@@ -43,7 +65,7 @@ static ListStatus checkInsert(const LinkedList *list, const char *key) {
 }
 
 // Вставляет узел newIndex в кольцо прямо перед узлом position.
-static void linkBefore(LinkedList *list, int newIndex, int position) {
+void linkBefore(DoublyCircularList *list, int newIndex, int position) {
   int before = list->nodes[position].prev;
   list->nodes[newIndex].next = position;
   list->nodes[newIndex].prev = before;
@@ -52,7 +74,7 @@ static void linkBefore(LinkedList *list, int newIndex, int position) {
 }
 
 // Делает узел newIndex единственным узлом кольца (он ссылается сам на себя).
-static void linkFirst(LinkedList *list, int newIndex) {
+void linkFirst(DoublyCircularList *list, int newIndex) {
   list->nodes[newIndex].next = newIndex;
   list->nodes[newIndex].prev = newIndex;
   list->head = newIndex;
@@ -60,7 +82,7 @@ static void linkFirst(LinkedList *list, int newIndex) {
 
 // ---------- Базовые операции ----------
 
-void createList(LinkedList *list) {
+void createList(DoublyCircularList *list) {
   list->head = NO_NODE;
   list->count = 0;
   for (int i = 0; i < MAX_NODES; i++) {
@@ -68,15 +90,7 @@ void createList(LinkedList *list) {
   }
 }
 
-bool isEmpty(const LinkedList *list) {
-  return list->count == 0 || list->head == NO_NODE;
-}
-
-bool isFull(const LinkedList *list) { return list->count >= MAX_NODES; }
-
-int countList(const LinkedList *list) { return list->count; }
-
-ListStatus appendNode(LinkedList *list, const char *key, const char *value) {
+ListStatus appendNode(DoublyCircularList *list, char *key, char *value) {
   ListStatus status = checkInsert(list, key);
   if (status != LIST_OK) {
     return status;
@@ -92,7 +106,7 @@ ListStatus appendNode(LinkedList *list, const char *key, const char *value) {
   return LIST_OK;
 }
 
-ListStatus deleteNode(LinkedList *list, const char *key) {
+ListStatus deleteNode(DoublyCircularList *list, char *key) {
   if (isEmpty(list)) {
     return LIST_EMPTY;
   }
@@ -116,12 +130,12 @@ ListStatus deleteNode(LinkedList *list, const char *key) {
   return LIST_OK;
 }
 
-void printInternal(const LinkedList *list) {
+void printInternal(DoublyCircularList *list) {
   printf("head = %d, count = %d, вместимость = %d\n", list->head, list->count,
          MAX_NODES);
   printf("idx  занят  prev  next  ключ / значение\n");
   for (int i = 0; i < MAX_NODES; i++) {
-    const Node *node = &list->nodes[i];
+    Node *node = &list->nodes[i];
     if (node->used) {
       printf("%3d  да    %4d  %4d  \"%s\" / \"%s\"\n", i, node->prev,
              node->next, node->key, node->value);
@@ -133,7 +147,7 @@ void printInternal(const LinkedList *list) {
 
 // ---------- Дополнительные операции ----------
 
-void printList(const LinkedList *list) {
+void printList(DoublyCircularList *list) {
   if (isEmpty(list)) {
     printf("Список пуст.\n");
     return;
@@ -147,21 +161,7 @@ void printList(const LinkedList *list) {
   printf("(снова голова)\n");
 }
 
-int findNode(const LinkedList *list, const char *key) {
-  if (isEmpty(list)) {
-    return NO_NODE;
-  }
-  int current = list->head;
-  do {
-    if (strcmp(list->nodes[current].key, key) == 0) {
-      return current;
-    }
-    current = list->nodes[current].next;
-  } while (current != list->head);
-  return NO_NODE;
-}
-
-const char *findValue(const LinkedList *list, const char *key) {
+char *findValue(DoublyCircularList *list, char *key) {
   int index = findNode(list, key);
   if (index == NO_NODE) {
     return NULL;
@@ -169,7 +169,7 @@ const char *findValue(const LinkedList *list, const char *key) {
   return list->nodes[index].value;
 }
 
-bool isSorted(const LinkedList *list) {
+bool isSorted(DoublyCircularList *list) {
   if (list->count < 2) {
     return true;
   }
@@ -184,7 +184,7 @@ bool isSorted(const LinkedList *list) {
   return true;
 }
 
-void sortList(LinkedList *list) {
+void sortList(DoublyCircularList *list) {
   if (list->count < 2) {
     return;
   }
@@ -210,7 +210,7 @@ void sortList(LinkedList *list) {
 }
 
 // Список должен быть уже отсортирован (это проверяет вызывающий код).
-ListStatus insertSorted(LinkedList *list, const char *key, const char *value) {
+ListStatus insertSorted(DoublyCircularList *list, char *key, char *value) {
   ListStatus status = checkInsert(list, key);
   if (status != LIST_OK) {
     return status;

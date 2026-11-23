@@ -15,27 +15,27 @@ typedef enum ListStatus {
   LIST_NOT_FOUND
 } ListStatus;
 
-typedef struct LinkedList {
+typedef struct DoublyCircularList {
   Node nodes[MAX_NODES]; // статический массив, в котором живут все узлы
   int head;              // индекс головы (или NO_NODE, если список пуст)
   int count;             // сколько узлов сейчас в списке
-} LinkedList;
+} DoublyCircularList;
 
 // Базовые операции
-void createList(LinkedList *list);
-bool isEmpty(const LinkedList *list);
-bool isFull(const LinkedList *list);
-int countList(const LinkedList *list);
-ListStatus appendNode(LinkedList *list, const char *key, const char *value);
-ListStatus deleteNode(LinkedList *list, const char *key);
-void printInternal(const LinkedList *list);
+void createList(DoublyCircularList *list);
+bool isEmpty(DoublyCircularList *list);
+bool isFull(DoublyCircularList *list);
+int countList(DoublyCircularList *list);
+ListStatus appendNode(DoublyCircularList *list, char *key, char *value);
+ListStatus deleteNode(DoublyCircularList *list, char *key);
+void printInternal(DoublyCircularList *list);
 
 // Дополнительные операции
-void printList(const LinkedList *list);
-void sortList(LinkedList *list);
-bool isSorted(const LinkedList *list);
-ListStatus insertSorted(LinkedList *list, const char *key, const char *value);
-int findNode(const LinkedList *list, const char *key);
-const char *findValue(const LinkedList *list, const char *key);
+void printList(DoublyCircularList *list);
+void sortList(DoublyCircularList *list);
+bool isSorted(DoublyCircularList *list);
+ListStatus insertSorted(DoublyCircularList *list, char *key, char *value);
+int findNode(DoublyCircularList *list, char *key);
+char *findValue(DoublyCircularList *list, char *key);
 
 #endif // !LINKED_LIST_H
