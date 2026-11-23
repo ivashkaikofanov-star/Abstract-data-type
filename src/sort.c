@@ -8,21 +8,19 @@ void swap(int *a, int *b) {
   *b = temp;
 }
 
-// Разбиение по схеме Ломуто. Опорный элемент - средний.
-// Возвращает индекс, на котором опорный элемент встал окончательно.
 int partition(Node nodes[], int order[], int low, int high) {
   int middle = low + (high - low) / 2;
-  swap(&order[middle], &order[high]); // прячем опорный в конец
+  swap(&order[middle], &order[high]); 
   char *pivotKey = nodes[order[high]].key;
 
-  int i = low - 1; // граница области "меньше опорного"
+  int i = low - 1; 
   for (int j = low; j < high; j++) {
     if (strcmp(nodes[order[j]].key, pivotKey) < 0) {
       i++;
       swap(&order[i], &order[j]);
     }
   }
-  swap(&order[i + 1], &order[high]); // опорный - на своё место
+  swap(&order[i + 1], &order[high]);
   return i + 1;
 }
 

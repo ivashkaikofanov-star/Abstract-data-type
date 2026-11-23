@@ -1,12 +1,9 @@
-
 #include "interactive.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 #define LINE_SIZE 256
-
-// ---------- Вывод ----------
 
 void printHelp(void) {
   printf("Команды:\n");
@@ -24,7 +21,6 @@ void printHelp(void) {
   printf("Ключ - одно слово. Значение может состоять из нескольких слов.\n");
 }
 
-// Печатает сообщение об успехе или причину неудачи.
 void reportStatus(ListStatus status, const char *successMessage) {
   switch (status) {
   case LIST_OK:
@@ -44,8 +40,6 @@ void reportStatus(ListStatus status, const char *successMessage) {
     break;
   }
 }
-
-// ---------- Проверки параметров ----------
 
 // Сверяет число введённых параметров с ожидаемым.
 bool checkArgs(const char *command, int given, int expected) {
@@ -71,8 +65,6 @@ bool checkLength(const char *text, int size, const char *name) {
 
   return false;
 }
-
-// ---------- Выполнение команд ----------
 
 void doAdd(DoublyCircularList *list, char *key, char *value) {
   if (!checkLength(key, KEY_SIZE, "ключ") ||
@@ -126,10 +118,7 @@ void doFind(const DoublyCircularList *list, char *key) {
   }
 }
 
-// ---------- Разбор и выполнение команды ----------
-
-// Разбирает введённую строку и выполняет команду.
-// Возвращает false, если пользователь ввёл exit.
+// Разбирает введённую строку и выполняет команду и возвращает false, если пользователь ввёл exit.
 bool executeCommand(DoublyCircularList *list, char *line) {
   char command[LINE_SIZE];
   char arg1[LINE_SIZE];
@@ -144,7 +133,6 @@ bool executeCommand(DoublyCircularList *list, char *line) {
     return true;
   }
 
-  // Получаем второй элемент — первый аргумент.
   // %n запоминает позицию, с которой начинается оставшаяся строка.
   int parsed = sscanf(line, "%*255s %255s %n", arg1, &position);
 
@@ -157,113 +145,87 @@ bool executeCommand(DoublyCircularList *list, char *line) {
 
       // Убираем пробелы и табуляции в конце значения.
       size_t length = strlen(arg2);
-
       while (length > 0 &&
              (arg2[length - 1] == ' ' || arg2[length - 1] == '\t')) {
         length--;
       }
-
       arg2[length] = '\0';
-
       if (length == 0) {
         arg2 = NULL;
       }
     }
   }
 
-  // Считаем количество введённых аргументов.
   int given = 0;
-
   if (arg1Ptr != NULL) {
     given++;
   }
-
   if (arg2 != NULL) {
     given++;
   }
-
-  // Выполняем соответствующую команду.
   if (strcmp(command, "exit") == 0) {
     if (checkArgs(command, given, 0)) {
       printf("Выход из программы.\n");
       return false;
     }
-
   } else if (strcmp(command, "help") == 0) {
     if (checkArgs(command, given, 0)) {
       printHelp();
     }
-
   } else if (strcmp(command, "add") == 0) {
     if (checkArgs(command, given, 2)) {
       doAdd(list, arg1Ptr, arg2);
     }
-
   } else if (strcmp(command, "insert") == 0) {
     if (checkArgs(command, given, 2)) {
       doInsert(list, arg1Ptr, arg2);
     }
-
   } else if (strcmp(command, "delete") == 0) {
     if (checkArgs(command, given, 1)) {
       doDelete(list, arg1Ptr);
     }
-
   } else if (strcmp(command, "find") == 0) {
     if (checkArgs(command, given, 1)) {
       doFind(list, arg1Ptr);
     }
-
   } else if (strcmp(command, "sort") == 0) {
     if (checkArgs(command, given, 0)) {
       sortList(list);
       printf("Список отсортирован по ключу (Quick Sort).\n");
       printList(list);
     }
-
   } else if (strcmp(command, "print") == 0) {
     if (checkArgs(command, given, 0)) {
       printList(list);
     }
-
   } else if (strcmp(command, "internal") == 0) {
     if (checkArgs(command, given, 0)) {
       printInternal(list);
     }
-
   } else if (strcmp(command, "empty") == 0) {
     if (checkArgs(command, given, 0)) {
       printf(isEmpty(list) ? "Список пуст.\n" : "Список не пуст.\n");
     }
-
   } else if (strcmp(command, "count") == 0) {
     if (checkArgs(command, given, 0)) {
       printf("Количество элементов: %d\n", countList(list));
     }
-
   } else {
     printf("Неизвестная команда: %s. Справка: help\n", command);
   }
-
   return true;
 }
-
-// ---------- Главный цикл ----------
 
 void runInteractive(DoublyCircularList *list) {
     char line[LINE_SIZE];
     bool running = true;
-
     printf("Интерактивный режим. Введите help для справки.\n");
-
     while (running) {
         printf("> ");
-
         if (scanf(" %255[^\n]", line) != 1) {
             printf("\nВвод закончился. Выход из программы.\n");
             break;
         }
-
         running = executeCommand(list, line);
     }
 }

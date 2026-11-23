@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// ---------- Вспомогательные (приватные) функции ----------
-
 // Приводит ячейку к состоянию "свободна".
 void clearNode(Node *node) {
   node->key[0] = '\0';
@@ -14,8 +12,7 @@ void clearNode(Node *node) {
   node->used = false;
 }
 
-// Находит свободную ячейку массива, записывает в неё ключ и значение
-// и возвращает её индекс. В список узел НЕ включается.
+// Находит свободную ячейку массива, записывает в неё ключ и значение и возвращает её индекс.
 int createNode(DoublyCircularList *list, char *key, char *value) {
   for (int i = 0; i < MAX_NODES; i++) {
     if (!list->nodes[i].used) {
@@ -64,7 +61,7 @@ ListStatus checkInsert(DoublyCircularList *list, char *key) {
   return LIST_OK;
 }
 
-// Вставляет узел newIndex в кольцо прямо перед узлом position.
+// Вставляет узел newIndex в кольцо перед узлом position.
 void linkBefore(DoublyCircularList *list, int newIndex, int position) {
   int before = list->nodes[position].prev;
   list->nodes[newIndex].next = position;
@@ -79,8 +76,6 @@ void linkFirst(DoublyCircularList *list, int newIndex) {
   list->nodes[newIndex].prev = newIndex;
   list->head = newIndex;
 }
-
-// ---------- Базовые операции ----------
 
 void createList(DoublyCircularList *list) {
   list->head = NO_NODE;
@@ -145,8 +140,6 @@ void printInternal(DoublyCircularList *list) {
   }
 }
 
-// ---------- Дополнительные операции ----------
-
 void printList(DoublyCircularList *list) {
   if (isEmpty(list)) {
     printf("Список пуст.\n");
@@ -188,7 +181,6 @@ void sortList(DoublyCircularList *list) {
   if (list->count < 2) {
     return;
   }
-  // 1. Выписываем индексы узлов в порядке обхода кольца.
   int order[MAX_NODES];
   int n = 0;
   int current = list->head;
@@ -197,10 +189,9 @@ void sortList(DoublyCircularList *list) {
     current = list->nodes[current].next;
   } while (current != list->head);
 
-  // 2. Сортируем массив индексов по ключам.
   quickSort(list->nodes, order, 0, n - 1);
 
-  // 3. Перевязываем next/prev в новом порядке (данные не копируются).
+  // Перевязываем next/prev.
   for (int k = 0; k < n; k++) {
     int node = order[k];
     list->nodes[node].next = order[(k + 1) % n];
@@ -209,7 +200,6 @@ void sortList(DoublyCircularList *list) {
   list->head = order[0];
 }
 
-// Список должен быть уже отсортирован (это проверяет вызывающий код).
 ListStatus insertSorted(DoublyCircularList *list, char *key, char *value) {
   ListStatus status = checkInsert(list, key);
   if (status != LIST_OK) {
@@ -219,7 +209,6 @@ ListStatus insertSorted(DoublyCircularList *list, char *key, char *value) {
   if (isEmpty(list)) {
     linkFirst(list, index);
   } else {
-    // Ищем первый узел, ключ которого БОЛЬШЕ нового.
     int position = list->head;
     bool found = false;
     do {
@@ -230,11 +219,9 @@ ListStatus insertSorted(DoublyCircularList *list, char *key, char *value) {
       position = list->nodes[position].next;
     } while (position != list->head);
 
-    // Если такого нет, position вернулся к голове: вставка "перед головой"
-    // означает добавление в конец. Если он есть, вставляем перед ним.
     linkBefore(list, index, position);
     if (found && position == list->head) {
-      list->head = index; // новый ключ меньше всех: он становится головой
+      list->head = index; 
     }
   }
   list->count++;
