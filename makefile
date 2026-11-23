@@ -1,13 +1,10 @@
-# Компилятор и флаги
 CC = gcc
 CFLAGS = -Iinclude -Wall -Wextra -g
 
-# Главная цель: собрать программу из объектных файлов
 main: build/main.o build/doubly_circular_list.o build/sort.o build/interactive.o
 	@mkdir -p build
 	$(CC) $(CFLAGS) build/main.o build/doubly_circular_list.o build/sort.o build/interactive.o -o build/main
 
-# Как получить каждый объектный файл
 build/main.o: src/main.c include/interactive.h include/doubly_circular_list.h include/node.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c src/main.c -o build/main.o
@@ -24,11 +21,9 @@ build/interactive.o: src/interactive.c include/interactive.h include/doubly_circ
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c src/interactive.c -o build/interactive.o
 
-# Собрать и запустить
 run: main
 	./build/main
 
-# Удалить результаты сборки
 clean:
 	rm -rf build
 
